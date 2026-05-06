@@ -1,0 +1,36 @@
+module.exports = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      screens: {
+        screen1645: { max: "1645px" },
+        screen1600: { max: "1600px" },
+        screen1460: { max: "1460px" },
+        screen1450: { max: "1450px" },
+        screen1430: { max: "1430px" },
+        screen1420: { max: "1420px" },
+        screen1400: { max: "1400px" },
+        screen1350: { max: "1350px" },
+        screen1280: { max: "1280px" },
+        screen1230: { max: "1230px" },
+        screen1180: { max: "1180px" },
+        screen1120: { max: "1120px" },
+        screen1000: { max: "1000px" },
+        screen950: { max: "950px" },
+        screen900: { max: "900px" },
+        screen770: { max: "770px" },
+        screen700: { max: "700px" },
+        screen650: { max: "650px" },
+        screen550: { max: "550px" },
+        screen500: { max: "500px" },
+        screen400: { max: "400px" },
+        screen360: { max: "360px" },
+      },
+    },
+  },
+  plugins: [],
+};

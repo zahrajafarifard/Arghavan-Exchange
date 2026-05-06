@@ -1,0 +1,15 @@
+# Node dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+
+# Environment
+.env
+
+# Local files
+npm-debug.log*
+*.log
+
+# Sequelize CLI artifacts
+*.sqlite

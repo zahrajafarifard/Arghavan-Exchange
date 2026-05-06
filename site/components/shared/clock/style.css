@@ -1,0 +1,17 @@
+.react-clock {
+  border-radius: 100%;
+  border: 3px solid white;
+}
+
+.react-clock__hand__body,
+.react-clock__mark__body {
+  background-color: white !important;
+}
+
+.react-clock__second-hand__body {
+  background-color: red !important;
+}
+.react-clock__mark__number {
+  color: white !important;
+  fill: white !important;
+}
