@@ -17,7 +17,7 @@ const SwiperAboutUs = ({ items }: PropsType) => {
   const two = items?.slice(0, 2);
 
   return (
-    <div className="w-full mx-auto">
+    <section aria-label="ویژگی‌های صرافی ارغوان" className="w-full mx-auto">
       <Swiper
         spaceBetween={20}
         slidesPerView={1}
@@ -29,6 +29,7 @@ const SwiperAboutUs = ({ items }: PropsType) => {
           prevEl: ".swiper-prev-about-us",
           nextEl: ".swiper-next-about-us",
         }}
+        aria-roledescription="carousel"
       >
         <SwiperSlide>
           <div
@@ -38,11 +39,7 @@ const SwiperAboutUs = ({ items }: PropsType) => {
               screen650:w-full"
           >
             {one.map((item) => {
-              return (
-                <div key={item?.id}>
-                  <Details item={item} />
-                </div>
-              );
+              return <Details key={item?.id} item={item} />;
             })}
           </div>
         </SwiperSlide>
@@ -55,16 +52,12 @@ const SwiperAboutUs = ({ items }: PropsType) => {
               screen650:w-full"
           >
             {two.map((item) => {
-              return (
-                <div key={item?.id}>
-                  <Details item={item} />
-                </div>
-              );
+              return <Details key={item?.id} item={item} />;
             })}
           </div>
         </SwiperSlide>
       </Swiper>
-    </div>
+    </section>
   );
 };
 

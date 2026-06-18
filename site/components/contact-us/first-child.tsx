@@ -1,7 +1,9 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import Image, { StaticImageData } from "next/image";
+import React from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { useMemo } from "react";
+
+import { useConfig } from "@/hooks/useConfig";
 
 import phoneIcon from "@/public/images/phone-purple.svg";
 import phoneIconDark from "@/public/images/phone-dark.svg";
@@ -13,74 +15,73 @@ import telegramIcon from "@/public/images/telegram.svg";
 import telegramIconDark from "@/public/images/telegram-dark.svg";
 import instaIcon from "@/public/images/instagram.svg";
 import instaIconDark from "@/public/images/instagram-dark.svg";
+
 import Button from "../shared/button/page";
+import Styles from "./style.module.css";
 
-type ContactDetail = {
-  id: number;
-  icon: StaticImageData;
-  title: string;
-  text: string;
+type ConfigData = {
+  instagram?: string;
+  telegram?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
 };
+
 const FirstChild: React.FC<{ theme: string }> = ({ theme }) => {
-  const [contactDetails, setContactDetails] = useState<ContactDetail[]>([]);
-  const [instagram, setInstagram] = useState<string>("");
-  const [telegram, setTelegram] = useState<string>("");
+  const { data, isLoading, error } = useConfig() as {
+    data?: ConfigData;
+    isLoading: boolean;
+    error: unknown;
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/getConfig`
-        );
+  const instagram = data?.instagram;
+  const telegram = data?.telegram;
 
-        if (response.status === 200) {
-          const data = await response.json();
+  const contactDetails = useMemo(
+    () => [
+      {
+        id: 1,
+        icon: theme === "light" ? locationIcon : locationIconDark,
+        title: "نشانی ما",
+        text: data?.address,
+      },
+      {
+        id: 2,
+        icon: theme === "light" ? phoneIcon : phoneIconDark,
+        title: "شماره تماس",
+        text: data?.phone,
+      },
+      {
+        id: 3,
+        icon: theme === "light" ? emailIcon : emailIconDark,
+        title: "آدرس ایمیل",
+        text: data?.email,
+      },
+    ],
+    [data, theme],
+  );
 
-          setInstagram(data?.instagram);
-          setTelegram(data?.telegram);
+  if (isLoading) return <div>Loading...</div>;
 
-          const details = [
-            {
-              id: 1,
-              icon: theme === "light" ? locationIcon : locationIconDark,
-              title: "نشانی ما",
-              text: data?.address,
-            },
-            {
-              id: 2,
-              icon: theme === "light" ? phoneIcon : phoneIconDark,
-              title: "شماره تماس",
-              text: data?.phone,
-            },
-            {
-              id: 3,
-              icon: theme === "light" ? emailIcon : emailIconDark,
-              title: "آدرس ایمیل",
-              text: data?.email,
-            },
-          ];
-
-          setContactDetails(details);
-        }
-      } catch (error) {
-        console.error("Error fetching config:", error);
-      }
-    };
-
-    fetchData();
-  }, [theme]);
-
+  if (error) return <div>Error</div>;
   return (
-    <div className="pt-36 pb-24 w-[80%] mx-auto screen1120:w-[90%] screen900:pt-16 screen400:w-[95%]">
-      <div className=" flex flex-row space-x-4 screen900:flex-col-reverse screen900:items-center screen900:space-x-0 ">
+    <section
+      aria-labelledby="contact-section-title"
+      className="pt-36 pb-24 w-[80%] mx-auto screen1120:w-[90%] screen900:pt-16 screen400:w-[95%]"
+    >
+      <form
+        aria-labelledby="contact-form-title"
+        className=" flex flex-row space-x-4 screen900:flex-col-reverse screen900:items-center screen900:space-x-0 "
+      >
         <div
-          className={`${
-            theme === "light" ? "bg-white" : "bg-[#1C1740]"
-          } w-1/2 py-11 px-12 rounded-[8px] screen1120:px-6 screen900:w-[95%] screen900:mt-5`}
+          className={`${Styles.cardBg} w-1/2 py-11 px-12 rounded-[8px] screen1120:px-6 screen900:w-[95%] screen900:mt-5`}
         >
-          <h4 className="text-[24px] font-bold text-right mb-8 ">
+          <h2
+            id="contact-section-title"
+            className="text-[24px] font-bold text-right mb-8 "
+          >
             با ما در ارتباط باشید
-          </h4>
+          </h2>
 
           <div className="flex flex-row-reverse space-x-4 space-x-reverse screen900:flex-col screen900:space-x-0 screen900:space-y-4  ">
             <input
@@ -122,9 +123,7 @@ const FirstChild: React.FC<{ theme: string }> = ({ theme }) => {
         </div>
         <div
           className={`${
-            theme === "light"
-              ? "bg-[#fff] screen900:bg-transparent"
-              : "bg-[#1C1740]"
+            Styles.cardBg
           } w-1/2 py-11 px-12 rounded-[5px] screen1120:px-6 screen900:w-[95%]`}
         >
           <h4 className="text-[24px] font-bold text-right mb-8 ">
@@ -140,11 +139,8 @@ const FirstChild: React.FC<{ theme: string }> = ({ theme }) => {
                 >
                   <div className="screen900:w-[50px] screen900:my-auto">
                     <div
-                      className={`rounded-full w-12 h-12 my-auto flex justify-center items-center ${
-                        theme === "light"
-                          ? "bg-white"
-                          : "bg-[#7A60FF] bg-opacity-25"
-                      }`}
+                      className={`rounded-full w-12 h-12 my-auto flex justify-center items-center 
+                        ${Styles.bgAccent}`}
                     >
                       <Image
                         src={item.icon}
@@ -159,11 +155,7 @@ const FirstChild: React.FC<{ theme: string }> = ({ theme }) => {
                     <div className="text-right mb-1">{item.title}</div>
                     <div
                       className={`text-right ml-auto mb-4
-                        ${
-                          theme === "light"
-                            ? "text-[#7E7D7D]"
-                            : "text-[#E4E4E4]"
-                        }
+                        ${Styles.textMuted}
                         
                         ${
                           item.id === 1
@@ -209,7 +201,7 @@ const FirstChild: React.FC<{ theme: string }> = ({ theme }) => {
             </Link>
           </div>
         </div>
-      </div>
+      </form>
 
       <section className="w-full mx-auto rounded-[10px] my-20 overflow-hidden">
         <iframe
@@ -220,7 +212,7 @@ const FirstChild: React.FC<{ theme: string }> = ({ theme }) => {
           style={theme === "dark" ? { opacity: 0.57 } : { opacity: 1 }}
         ></iframe>
       </section>
-    </div>
+    </section>
   );
 };
 

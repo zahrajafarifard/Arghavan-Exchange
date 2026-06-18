@@ -5,8 +5,11 @@ import Image from "next/image";
 import { io } from "socket.io-client";
 import { Pagination, Navigation, Scrollbar } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+// @ts-ignore
 import "swiper/css";
+// @ts-ignore
 import "swiper/css/pagination";
+// @ts-ignore
 import "swiper/css/navigation";
 
 import Details from "../../shared/coin-details";

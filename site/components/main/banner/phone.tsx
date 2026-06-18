@@ -1,12 +1,32 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import React, { useState } from "react";
 
 import CoinDetails from "./phone-coin-details";
 import CurrencyDetails from "./phone-currency-details";
+import { useFeaturedCoins } from "@/hooks/useCoin";
+import { useFeaturedCurrencies } from "@/hooks/useCurrency";
+import { useSocketQuery } from "@/hooks/useSocketQuery";
 
 interface Coin {
   name: string;
+}
+
+interface FeaturedCoinItem {
+  id: number;
+  Coin: Coin;
+  buyPrice: number;
+  pBuyPrice: number;
+  sellPrice: number;
+  pSellPrice: number;
+}
+
+interface PercentChange {
+  percentChangeIn24Hours: number;
+}
+
+interface FeaturedCoinsResponse {
+  coins: FeaturedCoinItem[];
+  percentChangeIn24Hours: PercentChange[];
 }
 
 interface Currency {
@@ -21,89 +41,67 @@ interface FeaturedCurrencyItem {
   sellPrice: number;
   pSellPrice: number;
 }
-interface FeaturedCoinItem {
-  id: number;
-  Coin: Coin;
-  buyPrice: number;
-  pBuyPrice: number;
-  sellPrice: number;
-  pSellPrice: number;
-}
 
-interface PercentChange {
-  percentChangeIn24Hours: number;
+interface FeaturedCurrenciesResponse {
+  currs: FeaturedCurrencyItem[];
+  percentChangeIn24Hours: PercentChange[];
 }
 
 const Phone: React.FC<{ theme: string }> = ({ theme }) => {
   const [showItems, setShowItems] = useState<"coin" | "currency">("coin");
-  const [coins, setCoins] = useState<FeaturedCoinItem[]>([]);
-  const [currencies, setCurrencies] = useState<FeaturedCurrencyItem[]>([]);
-  const [percentChangeIn24Hours, setPercentChangeIn24Hours] = useState<
-    PercentChange[]
-  >([]);
 
-  useEffect(() => {
-    const _fetchCurrs = async () => {
-      const _response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/featuredCoins`
-      );
+  const { data, error, isLoading } = useFeaturedCoins();
 
-      switch (_response.status) {
-        case 200:
-          const _data = await _response.json();
-          setCoins(_data?.coins);
-          setPercentChangeIn24Hours(_data?.percentChangeIn24Hours);
-          break;
+  const coins = data?.coins ?? [];
+  const percentChangeIn24Hours = data?.percentChangeIn24Hours ?? [];
 
-        default:
-          break;
+  const {
+    data: CurrData,
+    error: hasErr,
+    isLoading: IsLoading,
+  } = useFeaturedCurrencies();
+  const currs = CurrData?.currs ?? [];
+  const percentChangeIn24Hours2 = CurrData?.percentChangeIn24Hours ?? [];
+
+  useSocketQuery<FeaturedCoinsResponse>({
+    eventName: "getFeaturedCoins",
+    queryKey: ["featuredCoins"],
+    updater: (old, coins) => {
+      if (!old) {
+        return {
+          coins,
+          percentChangeIn24Hours: [],
+        };
       }
-    };
 
-    _fetchCurrs();
+      return {
+        ...old,
+        coins,
+      };
+    },
+  });
 
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
-      transports: ["websocket"],
-    });
-
-    socket.on("connect", () => {
-      socket.on("getFeaturedCoins", (data) => {
-        setCoins(data);
-      });
-    });
-  }, []);
-
-  useEffect(() => {
-    const _fetchCurrs = async () => {
-      const _response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/featuredCurrencies`
-      );
-
-      switch (_response.status) {
-        case 200:
-          const _data = await _response.json();
-
-          setCurrencies(_data?.currs);
-          setPercentChangeIn24Hours(_data?.percentChangeIn24Hours);
-          break;
-
-        default:
-          break;
+  useSocketQuery<FeaturedCurrenciesResponse>({
+    eventName: "getFeaturedCurrencies",
+    queryKey: ["featuredCurrencies"],
+    updater: (old, currs) => {
+      if (!old) {
+        return {
+          currs,
+          percentChangeIn24Hours: [],
+        };
       }
-    };
 
-    _fetchCurrs();
+      return {
+        ...old,
+        currs,
+      };
+    },
+  });
 
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
-      transports: ["websocket"],
-    });
+  if (isLoading || IsLoading) return <div>Loading...</div>;
 
-    socket.on("connect", () => {
-      socket.on("getFeaturedCurrencies", (data) => {
-        setCurrencies(data);
-      });
-    });
-  }, []);
+  if (error || hasErr) return <div>Error</div>;
 
   return (
     <div className="bg-white h-full w-full">
@@ -142,17 +140,15 @@ const Phone: React.FC<{ theme: string }> = ({ theme }) => {
                 key={coin?.id}
                 item={coin}
                 percentChangeIn24Hours={percentChangeIn24Hours[index]}
-              
               />
             );
           })
-        : currencies?.map((currency, index) => {
+        : currs?.map((currency, index) => {
             return (
               <CurrencyDetails
                 key={currency?.id}
                 item={currency}
-                percentChangeIn24Hours={percentChangeIn24Hours[index]}
-                
+                percentChangeIn24Hours={percentChangeIn24Hours2[index]}
               />
             );
           })}

@@ -17,29 +17,32 @@ const Card = ({
   text: string;
   borderColor: string;
 }) => (
-  <div
-    className={`${bgColor}  rounded-[4px] py-7 px-4 relative 
+  <article
+    className={`${bgColor} rounded-[4px] py-7 px-4 relative 
       screen1400:py-6 screen1400:px-3 screen1230:py-5 
       screen900:w-1/2 screen900:mx-auto screen900:py-7 screen900:px-4
-      screen650:w-2/3 screen400:w-[80%]    `}
+      screen650:w-2/3 screen400:w-[80%]`}
   >
-    <p className="text-[22px] font-bold screen1230:text-[17px] screen900:text-[22px]">
+    <h3 className="text-[22px] font-bold screen1230:text-[17px] screen900:text-[22px]">
       {title}
-    </p>
+    </h3>
     <p
-      className={`${textColor} text-sm px-6 pt-2 screen1400:px-3 screen1230:text-[13px] screen1230:px-0 screen1230:pt-1
+      className={` text-[${textColor}] text-sm px-6 pt-2 screen1400:px-3 screen1230:text-[13px] screen1230:px-0 screen1230:pt-1
         screen900:text-sm screen900:pt-2 screen900:px-6`}
     >
       {description}
     </p>
     <div
+      aria-hidden="true"
       className={`${bgColor} w-8 h-8 -bottom-4 absolute rotate-45 inset-x-0 mx-auto screen1230:w-6 screen1230:h-6 screen1230:-bottom-3`}
     ></div>
     <div
-      className={`h-24 absolute border-l-[2px] border-dashed border-[${borderColor}] inset-x-0 mx-auto w-fit -z-10 top-[100%] 
-      screen1230:h-20`}
+      aria-hidden="true"
+      className={`h-24 absolute border-l-[2px] border-dashed border-[${borderColor}]  inset-x-0 mx-auto w-fit -z-10 top-[100%] screen1230:h-20`}
     >
       <div
+        style={{ backgroundColor: bgColor, border: `1px solid ${borderColor}` }}
+        aria-hidden="true"
         className={`${bgColor} border border-[${borderColor}] w-6 h-6 absolute -bottom-3 -right-3 rounded-full -rotate-45 inset-x-0 mx-auto 
           screen1230:w-5 screen1230:h-5 screen1230:-bottom-2 screen1230:-right-2.5`}
       ></div>
@@ -47,7 +50,7 @@ const Card = ({
         {text}
       </p>
     </div>
-  </div>
+  </article>
 );
 
 const Third: React.FC<{ theme: string }> = ({ theme }) => {

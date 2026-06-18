@@ -7,17 +7,13 @@ interface PropsType {
 }
 const SecondChild: React.FC<PropsType> = ({ items }) => {
   return (
-    <div className="w-full mx-auto">
-      <div className="grid grid-cols-4 gap-14 screen1460:gap-8 screen1400:gap-6 screen1350:gap-3">
-        {items?.map((item) => {
-          return (
-            <div key={item.id}>
-              <Details item={item} />
-            </div>
-          );
-        })}
+    <section aria-label="ویژگی‌های صرافی" className="w-full mx-auto">
+      <div className="grid grid-cols-4  gap-14 screen1460:gap-8 screen1400:gap-6 screen1350:gap-3">
+        {items.map((item) => (
+          <Details key={item.id} item={item} />
+        ))}
       </div>
-    </div>
+    </section>
   );
 };
 

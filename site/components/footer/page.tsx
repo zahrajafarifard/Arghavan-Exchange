@@ -1,11 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
+import { useConfig } from "@/hooks/useConfig";
 import logo from "@/public/images/logo-white.svg";
 import logoDark from "@/public/images/logo-dark.svg";
 import insta from "@/public/images/instagram-white.svg";
@@ -14,39 +15,33 @@ import telegramIcon from "@/public/images/telegram-white.svg";
 import telegramDark from "@/public/images/telegram-white-dark.svg";
 import phoneIcon from "@/public/images/phone-purple.svg";
 
+type ConfigData = {
+  instagram?: string;
+  telegram?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  workHours?: string;
+};
+
 const Footer = () => {
-  const [address, setAddress] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [workHour, setWorkHour] = useState<string>("");
-  const [instagram, setInstagram] = useState<string>("");
-  const [telegram, setTelegram] = useState<string>("");
   const theme = useSelector((state: RootState) => state.theme.theme);
 
-  useEffect(() => {
-    const _data = async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/getConfig`
-      );
+  const { data, isLoading, error } = useConfig() as {
+    data?: ConfigData;
+    isLoading: boolean;
+    error: unknown;
+  };
 
-      switch (response.status) {
-        case 200:
-          const data = await response.json();
-          setPhone(data?.phone);
-          setAddress(data?.address);
-          setEmail(data?.email);
-          setWorkHour(data?.workHours);
-          setInstagram(data?.instagram);
-          setTelegram(data?.telegram);
+  const instagram = data?.instagram;
+  const telegram = data?.telegram;
+  const address = data?.address;
+  const phone = data?.phone;
+  const email = data?.email;
+  const workHour = data?.workHours;
 
-          break;
-
-        default:
-          break;
-      }
-    };
-    _data();
-  }, []);
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error</div>;
 
   return (
     <>

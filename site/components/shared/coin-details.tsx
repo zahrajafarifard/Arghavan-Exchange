@@ -11,6 +11,7 @@ import emamiOld from "@/public/images/emami-old.svg";
 import emami from "@/public/images/emami.svg";
 import tamam from "@/public/images/tamam.png";
 import close from "@/public/images/x.svg";
+import { useCoinPrices } from "@/hooks/useCoin";
 
 interface FeaturedItemsType {
   Coin: { name: string };
@@ -32,7 +33,7 @@ const DetailsSmallScreen: React.FC<PropsType> = ({
 }) => {
   const theme = useSelector((state: RootState) => state.theme.theme);
 
-  const [data, setData] = useState<[]>([]);
+  // const [data, setData] = useState<[]>([]);
   const [showChart, setShowChart] = useState<boolean>(false);
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
 
@@ -41,26 +42,9 @@ const DetailsSmallScreen: React.FC<PropsType> = ({
     if (modal) setModalRoot(modal);
   }, []);
 
-  useEffect(() => {
-    const _fetchCurrencies = async () => {
-      const _response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/getCoinPricesForChart`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: item.id }),
-        }
-      );
+  const { data, isLoading, error } = useCoinPrices(item.id);
 
-      if (_response.status === 200) {
-        const _data = await _response.json();
-
-        setData(_data?.data);
-      }
-    };
-
-    if (item.id) _fetchCurrencies();
-  }, [item.id]);
+  const chartData = data?.data;
 
   const getFlagImage = () => {
     const CoinName = item.Coin.name;
@@ -68,6 +52,10 @@ const DetailsSmallScreen: React.FC<PropsType> = ({
     if (CoinName.includes("امامی")) return emami;
     return tamam;
   };
+
+  if (isLoading) return <div>Loading...</div>;
+
+  if (error) return <div>Error</div>;
 
   return (
     <div
@@ -137,7 +125,7 @@ const DetailsSmallScreen: React.FC<PropsType> = ({
           {item?.sellPrice?.toLocaleString()}
         </div>
         <div className="mx-auto my-auto w-full overflow-hidden">
-          <Chart items={data} />
+          <Chart items={chartData} />
         </div>
       </div>
 
@@ -213,12 +201,12 @@ const DetailsSmallScreen: React.FC<PropsType> = ({
                   </div>
                 </div>
                 <div className="mx-auto flex justify-center items-center">
-                  <Chart2 items={data} />
+                  <Chart2 items={chartData} />
                 </div>
               </div>
             </>,
 
-            modalRoot
+            modalRoot,
           )
         : null}
     </div>

@@ -5,8 +5,11 @@ import Image from "next/image";
 import { io } from "socket.io-client";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Scrollbar } from "swiper/modules";
+// @ts-ignore
 import "swiper/css";
+// @ts-ignore
 import "swiper/css/pagination";
+// @ts-ignore
 import "swiper/css/navigation";
 import Details from "../../shared/currency-details";
 import gifDark from "@/public/images/GIF-darkmode.gif";
@@ -42,7 +45,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
   useEffect(() => {
     const _fetchCurrs = async () => {
       const _response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/getallcurrencies`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/getallcurrencies`,
       );
 
       switch (_response.status) {

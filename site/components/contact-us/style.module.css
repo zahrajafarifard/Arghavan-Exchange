@@ -1,0 +1,31 @@
+ .opacityCls {
+  opacity: 1;
+}
+
+:global([data-theme='dark']) .opacityCls {
+  opacity: 0.3;
+}
+
+:global([data-theme='light']) .cardBg {
+  background-color: white;
+}
+
+:global([data-theme='dark']) .cardBg {
+  background-color: #1C1740;
+}
+
+:global([data-theme='light']) .bgAccent {
+  background-color: white;
+}
+
+:global([data-theme='dark']) .bgAccent {
+  background-color: rgba(122, 96, 255, 0.25);
+}
+
+:global([data-theme='light']) .textMuted {
+  color: #7E7D7D;
+}
+
+:global([data-theme='dark']) .textMuted {
+  color: #E4E4E4;
+}

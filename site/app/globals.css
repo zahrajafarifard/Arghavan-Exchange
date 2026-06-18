@@ -5,6 +5,7 @@
 
 /* @import "tailwindcss/utilities"; */
 :root {
+  user-select: none;
   /* --background: #f6f6f6;
   --foreground: #333; */
 
@@ -12,6 +13,7 @@
   --background-dark: #020415;
   --text-light: #242424;
   --text-dark: #ffffff;
+  overflow-x: hidden;
 }
 
 /* @theme inline { */

@@ -3,17 +3,18 @@ import Image from "next/image";
 
 import bgImg from "@/public/images/Background.png";
 import Symbol from "@/public/images/Symbol.svg";
+import Styles from "./style.module.css";
 
-const Header: React.FC<{ theme: string }> = ({ theme }) => {
+const Header: React.FC = () => {
   return (
-    <div className="relative h-fit w-full py-36 ">
+    <div className=" relative h-fit w-full py-36 ">
       <Image
         src={bgImg}
         alt="Background"
         layout="fill"
         objectFit="cover"
         quality={100}
-        className={`${theme === "light" ? "opacity-100" : "opacity-30"}`}
+        className={Styles.opacityCls}
       />
       <div className="w-fit h-fit absolute mx-auto my-auto inset-0">
         <h2 className="text-white text-[40px] font-semibold">تماس با ما</h2>

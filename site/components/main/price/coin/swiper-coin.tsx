@@ -1,14 +1,20 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+
 import { Pagination, Navigation, Scrollbar } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+// @ts-ignore
 import "swiper/css";
+// @ts-ignore
 import "swiper/css/pagination";
+// @ts-ignore
 import "swiper/css/navigation";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import Details from "../../../shared/coin-details";
+import { useSocketQuery } from "@/hooks/useSocketQuery";
+
+import { useFeaturedCoins } from "@/hooks/useCoin";
+import { useEffect } from "react";
 
 interface FeaturedItemsType {
   id: number;
@@ -24,48 +30,43 @@ interface SwiperCoinProps {
   theme: string;
   responseStatus: number;
 }
+
+interface PercentChange {
+  percentChangeIn24Hours: number;
+}
+
+interface FeaturedCoinsResponse {
+  coins: FeaturedItemsType[];
+  percentChangeIn24Hours: PercentChange[];
+}
+
 const SwiperCoin: React.FC<SwiperCoinProps> = ({
   items,
   theme,
   responseStatus,
 }) => {
-  const [featuredItems, setFeaturedItems] = useState<FeaturedItemsType[]>([]);
-  const [percentChangeIn24Hours, setPercentChangeIn24Hours] = useState<[]>([]);
+  const { data, error, isLoading } = useFeaturedCoins();
 
-  useEffect(() => {
-    setFeaturedItems(items);
-  }, [items]);
+  const featuredItems = items ?? data?.coins;
+  const percentChangeIn24Hours = data?.percentChangeIn24Hours ?? [];
 
-  useEffect(() => {
-    const _fetchCurrs = async () => {
-      const _response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/featuredCoins`
-      );
-
-      switch (_response.status) {
-        case 200:
-          const _data = await _response.json();
-          setFeaturedItems(_data?.coins);
-          setPercentChangeIn24Hours(_data?.percentChangeIn24Hours);
-          break;
-
-        default:
-          break;
+  useSocketQuery<FeaturedCoinsResponse>({
+    eventName: "getFeaturedCoins",
+    queryKey: ["featuredCoins"],
+    updater: (old, coins) => {
+      if (!old) {
+        return {
+          coins,
+          percentChangeIn24Hours: [],
+        };
       }
-    };
 
-    _fetchCurrs();
-
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
-      transports: ["websocket"],
-    });
-
-    socket.on("connect", () => {
-      socket.on("getFeaturedCoins", (data) => {
-        setFeaturedItems(data);
-      });
-    });
-  }, []);
+      return {
+        ...old,
+        coins,
+      };
+    },
+  });
 
   const one = featuredItems?.slice(0, 3);
   const two = featuredItems?.slice(3, 6);
@@ -80,6 +81,11 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
   const _four = featuredItems?.slice(3, 4);
   const _five = featuredItems?.slice(4, 5);
   const _six = featuredItems?.slice(5, 6);
+
+  if (isLoading) return <div>Loading...</div>;
+
+  if (error) return <div>Error</div>;
+  
 
   if (featuredItems?.length == 0 && responseStatus !== 406) {
     return (
@@ -112,7 +118,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
         >
           <SwiperSlide>
             <div className="mx-auto w-full my-6  grid grid-cols-3 gap-x-4">
-              {one.map((coin, index: number) => {
+              {one?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}
@@ -123,10 +129,10 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
               })}
             </div>
           </SwiperSlide>
-          {two.length !== 0 ? (
+          {two?.length !== 0 ? (
             <SwiperSlide>
               <div className="mx-auto w-full my-6 grid grid-cols-3 gap-x-4">
-                {two.map((coin, index: number) => {
+                {two?.map((coin, index: number) => {
                   return (
                     <Details
                       key={coin?.id}
@@ -157,7 +163,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
         >
           <SwiperSlide>
             <div className="mx-auto w-full my-6  grid grid-cols-2 gap-x-4">
-              {one_1.map((coin, index: number) => {
+              {one_1?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}
@@ -171,7 +177,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
 
           <SwiperSlide>
             <div className="mx-auto w-full my-6 grid grid-cols-2 gap-x-4">
-              {two_2.map((coin, index: number) => {
+              {two_2?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}
@@ -184,7 +190,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
           </SwiperSlide>
           <SwiperSlide>
             <div className="mx-auto w-full my-6 grid grid-cols-2 gap-x-4">
-              {three_3.map((coin, index: number) => {
+              {three_3?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}
@@ -212,7 +218,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
         >
           <SwiperSlide>
             <div className="mx-auto w-[80%] my-6  grid grid-cols-1 gap-x-5 screen500:w-[100%] ">
-              {_one.map((coin, index: number) => {
+              {_one?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}
@@ -226,7 +232,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
 
           <SwiperSlide>
             <div className="mx-auto w-[80%] my-6 grid grid-cols-1 gap-x-5 screen500:w-[100%] ">
-              {_two.map((coin, index: number) => {
+              {_two?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}
@@ -239,7 +245,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
           </SwiperSlide>
           <SwiperSlide>
             <div className="mx-auto w-[80%] my-6 grid grid-cols-1 gap-x-5 screen500:w-[100%] ">
-              {_three.map((coin, index: number) => {
+              {_three?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}
@@ -253,7 +259,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
 
           <SwiperSlide>
             <div className="mx-auto w-[80%] my-6 grid grid-cols-1 gap-x-5 screen500:w-[100%] ">
-              {_four.map((coin, index: number) => {
+              {_four?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}
@@ -266,7 +272,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
           </SwiperSlide>
           <SwiperSlide>
             <div className="mx-auto w-[80%] my-6 grid grid-cols-1 gap-x-5 screen500:w-[100%] ">
-              {_five.map((coin, index: number) => {
+              {_five?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}
@@ -279,7 +285,7 @@ const SwiperCoin: React.FC<SwiperCoinProps> = ({
           </SwiperSlide>
           <SwiperSlide>
             <div className="mx-auto w-[80%] my-6 grid grid-cols-1 gap-x-5 screen500:w-[100%] ">
-              {_six.map((coin, index: number) => {
+              {_six?.map((coin, index: number) => {
                 return (
                   <Details
                     key={coin?.id}

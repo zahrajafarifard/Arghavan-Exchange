@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-// import localFont from "next/font/local";
 
 import { ReduxProvider } from "../store/ReduxProvider";
+import Providers from "./providers";
 import Header from "@/components/header/page";
 import Footer from "@/components/footer/page";
 import { Peyda } from "@/utils/fonts";
+// @ts-ignore
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -40,18 +41,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fa">
       <body className={Peyda.className}>
-        <ReduxProvider>
-          <header className="sticky top-0 z-50">
-            <Header />
-          </header>
-          {children}
-          <div id="modal" />
-          <footer>
-            <Footer />
-          </footer>
-        </ReduxProvider>
+        <Providers>
+          <ReduxProvider>
+            <header className="sticky top-0 z-50 backdrop-blur-sm">
+              <Header />
+            </header>
+            {children}
+            <div id="modal" />
+            <footer>
+              <Footer />
+            </footer>
+          </ReduxProvider>
+        </Providers>
       </body>
     </html>
   );

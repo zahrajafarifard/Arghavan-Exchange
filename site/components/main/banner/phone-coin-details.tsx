@@ -1,6 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
 import Image from "next/image";
+
+import { useCoinPrices } from "@/hooks/useCoin";
 
 import Chart from "@/components/shared/chart/page";
 import emamiOld from "@/public/images/emami-old.svg";
@@ -30,28 +32,9 @@ interface PropsType {
 }
 
 const CoinDetails: React.FC<PropsType> = ({ item, percentChangeIn24Hours }) => {
-  const [data, setData] = useState<[]>([]);
+  const { data, isLoading, error } = useCoinPrices(item.id);
 
-  useEffect(() => {
-    const _fetchCurrencies = async () => {
-      const _response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/getCoinPricesForChart`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: item.id }),
-        }
-      );
-
-      if (_response.status === 200) {
-        const _data = await _response.json();
-
-        setData(_data?.data);
-      }
-    };
-
-    if (item.id) _fetchCurrencies();
-  }, [item.id]);
+  const chartData = data?.data;
 
   const getFlagImage = () => {
     const CoinName = item.Coin.name;
@@ -59,6 +42,10 @@ const CoinDetails: React.FC<PropsType> = ({ item, percentChangeIn24Hours }) => {
     if (CoinName.includes("امامی")) return emami;
     return tamam;
   };
+
+  if (isLoading) return <div>Loading...</div>;
+
+  if (error) return <div>Error</div>;
 
   return (
     <div
@@ -111,7 +98,7 @@ const CoinDetails: React.FC<PropsType> = ({ item, percentChangeIn24Hours }) => {
           {item?.sellPrice?.toLocaleString()}
         </div>
         <div className="mx-auto my-auto w-full overflow-hidden">
-          <Chart items={data} />
+          <Chart items={chartData} />
         </div>
       </div>
     </div>

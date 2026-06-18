@@ -15,32 +15,30 @@ import telegramIcon from "@/public/images/telegram.svg";
 import telegramIconDark from "@/public/images/telegram-dark.svg";
 import ThemeSwitcher from "../shared/themeSwitcher/page";
 import HamburgerMenu from "./hamburger-menu";
+import { useConfig } from "@/hooks/useConfig";
+
+type ConfigData = {
+  instagram?: string;
+  telegram?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+};
 
 const Header = () => {
   const theme = useSelector((state: RootState) => state.theme.theme);
-  const [instagram, setInstagram] = useState<string>("");
-  const [telegram, setTelegram] = useState<string>("");
 
-  useEffect(() => {
-    const _data = async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/getConfig`
-      );
+  const { data, isLoading, error } = useConfig() as {
+    data?: ConfigData;
+    isLoading: boolean;
+    error: unknown;
+  };
 
-      switch (response.status) {
-        case 200:
-          const data = await response.json();
-          setInstagram(data?.instagram);
-          setTelegram(data?.telegram);
+  const instagram = data?.instagram;
+  const telegram = data?.telegram;
 
-          break;
-
-        default:
-          break;
-      }
-    };
-    _data();
-  }, []);
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error</div>;
 
   return (
     <div className="w-[80%] mx-auto flex flex-row justify-between py-8 screen900:w-[90%]">
@@ -116,7 +114,10 @@ const Header = () => {
 
           <ThemeSwitcher />
           <div className="screen900:grid hidden my-auto cursor-pointer">
-            <HamburgerMenu instagram={instagram} telegram={telegram} />
+            <HamburgerMenu
+              instagram={instagram ?? ""}
+              telegram={telegram ?? ""}
+            />
           </div>
         </div>
       </div>

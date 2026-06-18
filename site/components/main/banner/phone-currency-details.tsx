@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
 import Image from "next/image";
+import { useCurrencyPrices } from "@/hooks/useCurrency";
 
 import Chart from "@/components/shared/chart/page";
 import us from "@/public/images/united states.svg";
@@ -46,28 +47,8 @@ const CurrencyDetails: React.FC<PropsType> = ({
   item,
   percentChangeIn24Hours,
 }) => {
-  const [data, setData] = useState<[]>([]);
-
-  useEffect(() => {
-    const _fetchCurrencies = async () => {
-      const _response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/getCurrencyPricesForChart`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: item.id }),
-        }
-      );
-
-      if (_response.status === 200) {
-        const _data = await _response.json();
-
-        setData(_data?.data);
-      }
-    };
-
-    if (item.id) _fetchCurrencies();
-  }, [item.id]);
+  const { data, error, isLoading } = useCurrencyPrices(item?.id);
+  const chartData = data?.data;
 
   const getFlagImage = () => {
     const currencyName = item.Currency.name;
@@ -90,6 +71,9 @@ const CurrencyDetails: React.FC<PropsType> = ({
     return us;
   };
 
+  if (isLoading) return <div>Loading...</div>;
+
+  if (error) return <div>Error</div>;
   return (
     <div
       style={{ direction: "rtl" }}
@@ -143,7 +127,7 @@ const CurrencyDetails: React.FC<PropsType> = ({
           {item?.sellPrice?.toLocaleString()}
         </div>
         <div className="mx-auto my-auto w-full overflow-hidden">
-          <Chart items={data} />
+          <Chart items={chartData} />
         </div>
       </div>
     </div>

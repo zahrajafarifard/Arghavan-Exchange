@@ -1,19 +1,24 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import React, { useState, useEffect } from "react";
+
 import { Pagination, Navigation, Scrollbar } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import CircularProgress from "@mui/material/CircularProgress";
 
+// @ts-ignore
 import "swiper/css";
+// @ts-ignore
 import "swiper/css/pagination";
+// @ts-ignore
 import "swiper/css/navigation";
 
 import Details from "../../../shared/currency-details";
+import { useSocketQuery } from "@/hooks/useSocketQuery";
+import { useFeaturedCurrencies } from "@/hooks/useCurrency";
 
 interface FeaturedItemsType {
   id: number;
-  Currency: { name: string; symbol: string };
+  Currency: { name: string; symbol?: string };
   buyPrice: number;
   pBuyPrice: number;
   sellPrice: number;
@@ -25,48 +30,42 @@ interface SwiperCurrencyProps {
   theme: string;
   responseStatus: number;
 }
+
+interface PercentChange {
+  percentChangeIn24Hours: number;
+}
+
+interface FeaturedCurrenciesResponse {
+  currs: FeaturedItemsType[];
+  percentChangeIn24Hours: PercentChange[];
+}
 const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
   items,
   theme,
   responseStatus,
 }) => {
-  const [featuredItems, setFeaturedItems] = useState<FeaturedItemsType[]>([]);
-  const [percentChangeIn24Hours, setPercentChangeIn24Hours] = useState<[]>([]);
+  const { data, error, isLoading } = useFeaturedCurrencies();
 
-  useEffect(() => {
-    setFeaturedItems(items);
-  }, [items]);
+  const featuredItems = items ?? data?.currs;
+  const percentChangeIn24Hours = data?.percentChangeIn24Hours ?? [];
 
-  useEffect(() => {
-    const _fetchCurrs = async () => {
-      const _response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/featuredCurrencies`
-      );
-
-      switch (_response.status) {
-        case 200:
-          const _data = await _response.json();
-          setFeaturedItems(_data?.currs);
-          setPercentChangeIn24Hours(_data?.percentChangeIn24Hours);
-          break;
-
-        default:
-          break;
+  useSocketQuery<FeaturedCurrenciesResponse>({
+    eventName: "getFeaturedCurrencies",
+    queryKey: ["featuredCurrencies"],
+    updater: (old, currs) => {
+      if (!old) {
+        return {
+          currs,
+          percentChangeIn24Hours: [],
+        };
       }
-    };
 
-    _fetchCurrs();
-
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
-      transports: ["websocket"],
-    });
-
-    socket.on("connect", () => {
-      socket.on("getFeaturedCurrencies", (data) => {
-        setFeaturedItems(data);
-      });
-    });
-  }, []);
+      return {
+        ...old,
+        currs,
+      };
+    },
+  });
 
   const one = featuredItems?.slice(0, 3);
   const two = featuredItems?.slice(3, 6);
@@ -82,7 +81,11 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
   const _five = featuredItems?.slice(4, 5);
   const _six = featuredItems?.slice(5, 6);
 
-  if (featuredItems?.length === 0 && responseStatus !==405) {
+  if (isLoading) return <div>Loading...</div>;
+
+  if (error) return <div>Error</div>;
+
+  if (featuredItems?.length === 0 && responseStatus !== 405) {
     return (
       <div className="w-full mx-auto my-20 flex flex-col justify-center items-center screen700:my-10">
         <CircularProgress
@@ -113,7 +116,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
         >
           <SwiperSlide>
             <div className="mx-auto w-full mt-6  grid grid-cols-3 gap-x-4 ">
-              {one.map((currency, index: number) => {
+              {one?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}
@@ -124,10 +127,10 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
               })}
             </div>
           </SwiperSlide>
-          {two.length !== 0 ? (
+          {two?.length !== 0 ? (
             <SwiperSlide>
               <div className="mx-auto w-full mt-6 grid grid-cols-3 gap-x-4">
-                {two.map((currency, index: number) => {
+                {two?.map((currency, index: number) => {
                   return (
                     <Details
                       key={currency?.id}
@@ -158,7 +161,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
         >
           <SwiperSlide>
             <div className="mx-auto w-full mt-6  grid grid-cols-2 gap-x-4 ">
-              {one_1.map((currency, index: number) => {
+              {one_1?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}
@@ -172,7 +175,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
 
           <SwiperSlide>
             <div className="mx-auto w-full mt-6 grid grid-cols-2 gap-x-4 ">
-              {two_2.map((currency, index: number) => {
+              {two_2?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}
@@ -186,7 +189,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
 
           <SwiperSlide>
             <div className="mx-auto w-full mt-6 grid grid-cols-2 gap-x-4">
-              {three_3.map((currency, index: number) => {
+              {three_3?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}
@@ -214,7 +217,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
         >
           <SwiperSlide>
             <div className="mx-auto w-[80%] mt-6  grid grid-cols-1 gap-x-2 screen500:w-[100%] ">
-              {_one.map((currency, index: number) => {
+              {_one?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}
@@ -228,7 +231,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
 
           <SwiperSlide>
             <div className="mx-auto w-[80%] mt-6 grid grid-cols-1 gap-x-2 screen500:w-[100%] ">
-              {_two.map((currency, index: number) => {
+              {_two?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}
@@ -242,7 +245,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
 
           <SwiperSlide>
             <div className="mx-auto w-[80%] mt-6 grid grid-cols-1 gap-x-2 screen500:w-[100%] ">
-              {_three.map((currency, index: number) => {
+              {_three?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}
@@ -255,7 +258,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
           </SwiperSlide>
           <SwiperSlide>
             <div className="mx-auto w-[80%] mt-6 grid grid-cols-1 gap-x-2 screen500:w-[100%] ">
-              {_four.map((currency, index: number) => {
+              {_four?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}
@@ -268,7 +271,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
           </SwiperSlide>
           <SwiperSlide>
             <div className="mx-auto w-[80%] mt-6 grid grid-cols-1 gap-x-2 screen500:w-[100%] ">
-              {_five.map((currency, index: number) => {
+              {_five?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}
@@ -281,7 +284,7 @@ const SwiperCurrency: React.FC<SwiperCurrencyProps> = ({
           </SwiperSlide>
           <SwiperSlide>
             <div className="mx-auto w-[80%] mt-6 grid grid-cols-1 gap-x-2 screen500:w-[100%] ">
-              {_six.map((currency, index: number) => {
+              {_six?.map((currency, index: number) => {
                 return (
                   <Details
                     key={currency?.id}

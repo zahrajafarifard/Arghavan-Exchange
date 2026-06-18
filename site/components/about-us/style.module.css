@@ -1,0 +1,61 @@
+.headerBg {
+  object-fit: cover;
+  opacity: 1;
+}
+
+
+:global([data-theme='dark']) .headerBg {
+  opacity: 0.3;
+}
+
+
+:global([data-theme='light']) .accentText {
+  color: #844DB4;
+}
+
+:global([data-theme='dark']) .accentText {
+  color: #7A60FF;
+}
+
+
+:global([data-theme='light']) .textMuted {
+  color: #7E7D7D;
+}
+
+:global([data-theme='dark']) .textMuted {
+  color: #E4E4E4;
+}
+
+:global([data-theme='light']) .iconBg {
+  background-color: #E6D7EA;
+}
+
+:global([data-theme='dark']) .iconBg {
+  background-color: #7a60ff40;
+}
+
+:global([data-theme='light']) .bgAccent {
+  background-color: #844DB4;
+}
+
+:global([data-theme='dark']) .bgAccent {
+  background-color: #1C1740;
+}
+
+
+:global([data-theme='light']) .cardBg {
+  background-color: #fff;
+}
+
+:global([data-theme='dark']) .cardBg {
+  background-color: #1C1740;
+}
+
+:global([data-theme='light']) .borderTheme {
+  border-color: #f2f2f2;
+}
+
+:global([data-theme='dark']) .borderTheme {
+  border-color: #7E7D7D;
+}
+

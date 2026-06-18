@@ -33,7 +33,7 @@ const PercentAreaChart: React.FC<PropsType> = ({ items }) => {
   }, [items]);
 
   const getPercents = (array: ItemsType[]) => {
-    return array.map((v) => v.sellPrice).filter((v) => !isNaN(v));
+    return array?.map((v) => v.sellPrice).filter((v) => !isNaN(v));
   };
 
   if (loading) {
@@ -49,7 +49,7 @@ const PercentAreaChart: React.FC<PropsType> = ({ items }) => {
       </div>
     );
   }
-  if (sellPrice.length === 0 || sellPrice.length === 1) {
+  if (sellPrice?.length === 0 || sellPrice?.length === 1) {
     return (
       <div className={`text-center  text-[${theme === "light" ? "#844A74" : "#7A60FF"}]`}>
         _

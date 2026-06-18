@@ -15,6 +15,7 @@ import Icon4Dark from "@/public/images/medal 1 (1).svg";
 
 import Bars from "@/components/shared/bars/page";
 import SwiperAboutUs from "./swiper";
+import styles from "../style.module.css";
 
 const SecondChild: React.FC<{ theme: string }> = ({ theme }) => {
   const items: { id: number; icon: string; title: string; text: string }[] = [
@@ -40,7 +41,7 @@ const SecondChild: React.FC<{ theme: string }> = ({ theme }) => {
       id: 4,
       icon: theme === "light" ? Icon1 : Icon1Dark,
       title: " تجربه و تخصص",
-      text: "سال‌ها تجربه حرفه ای در بازار ارز و طلا، تضمینی برای ارائه خدمات مطمئن و به‌روز است.",
+      text: "سال‌ها تجربه حرفه ای در بازار ارز و طلا، تضمینی برای ارائه خدمات مطمئن است.",
     },
   ];
   const backgroundStyle: React.CSSProperties = {
@@ -63,7 +64,8 @@ const SecondChild: React.FC<{ theme: string }> = ({ theme }) => {
     alignItems: "center",
   };
   return (
-    <div
+    <section
+      aria-labelledby="features-title"
       style={theme === "light" ? backgroundStyle : darkStyle}
       className="pt-24 pb-16 flex flex-col "
     >
@@ -71,42 +73,61 @@ const SecondChild: React.FC<{ theme: string }> = ({ theme }) => {
         <div className="flex flex-row-reverse justify-between mb-16">
           <div className="flex flex-col">
             <div className="flex flex-row justify-end pt-1 pb-3">
-              <Bars />
+              <Bars aria-hidden="true" />
 
               <span
-                className={`text-lg ${
-                  theme === "light" ? "text-[#844DB4]" : "text-[#7A60FF]"
-                } ml-1 screen1120:text-base`}
+                className={`text-lg ${styles.accentText} ml-1 screen1120:text-base`}
               >
                 صرافی ارغوان
               </span>
             </div>
 
-            <h1
-              style={{ direction: "rtl" }}
+            <h2
+              id="features-title"
+              dir="rtl"
               className="text-[40px] font-bold text-right screen1430:text-[30px] screen1120:text-2xl screen500:text-[21px] "
             >
               ویژگی‌های منحصربه‌فرد ما
-            </h1>
+            </h2>
           </div>
 
-          <div className="flex-row-reverse space-x-2 space-x-reverse screen400:space-x-1 screen400:space-x-reverse hidden screen1120:flex">
-            <div
+          <div
+            role="group"
+            aria-label="اسلایدر ویژگی‌ها"
+            className="flex-row-reverse space-x-2 space-x-reverse screen400:space-x-1 screen400:space-x-reverse hidden screen1120:flex"
+          >
+            <button
+              type="button"
+              aria-label="اسلاید بعدی"
               className={`swiper-next-about-us py-1 px-6 rounded-[8px] mt-auto 
               screen700:px-4 screen700:py-1 screen400:px-3 screen400:py-0.5 ${
-                theme === "light" ? "bg-[#844DB4] " : "bg-[#1C1740]"
+                styles.bgAccent
               }`}
             >
-              <Image src={arrowR} width={24} height={24} alt="بعدی" />
-            </div>
-            <div
+              <Image
+                src={arrowR}
+                width={24}
+                height={24}
+                alt=""
+                aria-hidden="true"
+              />
+            </button>
+            <button
+              type="button"
+              aria-label="اسلاید قبلی"
               className={`swiper-prev-about-us py-1 px-6 rounded-[8px] mt-auto
               screen700:px-4 screen700:py-1 screen400:px-3 screen400:py-0.5 ${
-                theme === "light" ? "bg-[#844DB4] " : "bg-[#1C1740]"
+                styles.bgAccent
               }`}
             >
-              <Image src={arrowL} width={24} height={24} alt="قبلی" />
-            </div>
+              <Image
+                src={arrowL}
+                width={24}
+                height={24}
+                alt=""
+                aria-hidden="true"
+              />
+            </button>
           </div>
         </div>
         <div className="screen1120:hidden">
@@ -116,7 +137,7 @@ const SecondChild: React.FC<{ theme: string }> = ({ theme }) => {
           <SwiperAboutUs items={items} />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

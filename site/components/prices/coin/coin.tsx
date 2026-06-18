@@ -32,7 +32,7 @@ const Coin: React.FC<{ theme: string }> = ({ theme }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ searchItem: query, mode: "all" }),
-        }
+        },
       );
 
       switch (response.status) {
@@ -173,7 +173,11 @@ const Coin: React.FC<{ theme: string }> = ({ theme }) => {
         </div>
       </div>
       <div className="pt-14">
-        <SwiperCoin propsItems={coins} responseStatus={responseStatus} theme={theme} />
+        <SwiperCoin
+          propsItems={coins}
+          responseStatus={responseStatus}
+          theme={theme}
+        />
       </div>
     </div>
   );

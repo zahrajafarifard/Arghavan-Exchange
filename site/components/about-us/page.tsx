@@ -12,11 +12,11 @@ const AboutUs = () => {
   const theme = useSelector((state: RootState) => state.theme.theme);
 
   return (
-    <div>
-      <Header theme={theme} />
+    <div data-theme={theme}>
+      <Header />
       <FirstChild theme={theme} />
-      <SecondChild theme={theme}/>
-      <Third theme={theme}/>
+      <SecondChild theme={theme} />
+      <Third theme={theme} />
     </div>
   );
 };

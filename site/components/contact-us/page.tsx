@@ -10,8 +10,8 @@ const ContactUs = () => {
   const theme = useSelector((state: RootState) => state.theme.theme);
 
   return (
-    <div>
-      <Header theme={theme} />
+    <div data-theme={theme}>
+      <Header />
       <FirstChild theme={theme} />
     </div>
   );

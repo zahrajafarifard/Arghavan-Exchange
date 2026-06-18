@@ -39,7 +39,7 @@ const Price: React.FC<{ theme: string }> = ({ theme }) => {
   const searchHandler = async (value?: string) => {
     setResponseStatus(0);
     const query = value ?? searchItem;
-
+  
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/search`,
@@ -47,7 +47,7 @@ const Price: React.FC<{ theme: string }> = ({ theme }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ searchItem: query, mode: "top" }),
-        }
+        },
       );
 
       switch (response.status) {
@@ -79,6 +79,10 @@ const Price: React.FC<{ theme: string }> = ({ theme }) => {
   useEffect(() => {
     if (showSearchInput) searchHandler();
   }, [searchItem]);
+
+  useEffect(() => {
+    searchHandler();
+  }, []);
 
   return (
     <div className="py-24 w-[80%] mx-auto screen900:w-[90%] ">
